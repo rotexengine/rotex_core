@@ -1,0 +1,23 @@
+[package]
+name = "rotex-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ash = { version = "0.38.0", features = ["linked"] }
+thiserror = "2.0.18"
+
+[dev-dependencies]
+rfd = "0.17.2"
+winit = "0.30.13"
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = "fat"
+
+[profile.release.package.'*']
+opt-level = 3
