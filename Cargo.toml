@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 description = "Core library for the Rotex Engine Development"
+github = "https://github.com/rotex-engine/rotex-core"
 
 [dependencies]
 thiserror = "2.0.18"
