@@ -1,15 +1,15 @@
 [package]
 name = "rotex-core"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 license = "MIT"
 description = "Core library for the Rotex Engine Development"
-github = "https://github.com/rotex-engine/rotex-core"
+repository = "https://github.com/rotexengine/rotex-core"
 
 [dependencies]
 thiserror = "2.0.18"
 raw-window-handle = "0.6.2"
-rotex-types = { version = "0.1.0" }
+rotex-types = { git = "https://github.com/rotexengine/rotex-types", branch = "staging" }
 
 [build-dependencies]
 shaderc = "0.10.1"
@@ -21,13 +21,13 @@ pollster = "0.4.0"
 web-time = "1.1.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-rotex-vulkan = { version = "0.1.0" }
+rotex-vulkan = { git = "https://github.com/rotexengine/rotex-vulkan", branch = "staging" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 ash-window = "0.13.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-rotex-wgpu = { version = "0.1.0" }
+rotex-wgpu = { git = "https://github.com/rotexengine/rotex-wgpu", branch = "staging" }
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 wasm-bindgen-futures = "0.4"

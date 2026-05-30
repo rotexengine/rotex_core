@@ -1,5 +1,5 @@
 use rotex_core::{
-    DeviceDescriptor, Extent2D, FrameDescriptor, GraphicsContext, IndexFormat, InstanceDescriptor,
+    CullMode, DeviceDescriptor, Extent2D, FrameDescriptor, GraphicsContext, IndexFormat, InstanceDescriptor,
     MaterialDescriptor, MaterialId, MeshDescriptor, MeshId, MeshInstanceDescriptor, PassDescriptor,
     ResourceBatchCreate, ResourceBatchUpdate, ResourceCreateDescriptor, ResourceHandle, TextureDescriptor,
     TextureFormat, TextureId,
@@ -185,6 +185,7 @@ impl ApplicationHandler for App {
                     fragment_shader_spv: include_bytes!(concat!(env!("OUT_DIR"), "/cube.frag.spv")).to_vec(),
                     fragment_entry: "main".to_string(),
                     enable_depth: true,
+                    cull_mode: CullMode::Back,
                     texture: Some(texture_id),
                 }),
             ])) {
@@ -331,8 +332,18 @@ fn cube_geometry() -> (Vec<[f32; 3]>, Vec<[f32; 3]>, Vec<u32>) {
         [0.4, 0.2, 1.0],
     ];
     let indices = vec![
-        0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0, 1, 5, 6, 6, 2, 1, 3, 2, 6, 6, 7,
-        3, 0, 1, 5, 5, 4, 0,
+        // back (-Z)
+        0, 2, 1, 2, 0, 3,
+        // front (+Z)
+        4, 5, 6, 6, 7, 4,
+        // left (-X)
+        0, 4, 7, 7, 3, 0,
+        // right (+X)
+        1, 6, 5, 6, 1, 2,
+        // top (+Y)
+        3, 6, 2, 6, 3, 7,
+        // bottom (-Y)
+        0, 1, 5, 5, 4, 0,
     ];
     (positions, colors, indices)
 }

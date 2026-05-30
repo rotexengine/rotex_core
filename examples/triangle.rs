@@ -1,5 +1,5 @@
 use rotex_core::{
-    DeviceDescriptor, Extent2D, GraphicsContext, FrameDescriptor, IndexFormat, InstanceDescriptor,
+    CullMode, DeviceDescriptor, Extent2D, GraphicsContext, FrameDescriptor, IndexFormat, InstanceDescriptor,
     MaterialDescriptor, MaterialId, MeshDescriptor, MeshId, MeshInstanceDescriptor, PassDescriptor,
     ResourceBatchCreate, ResourceCreateDescriptor, ResourceHandle, SceneDescriptor, SurfaceDescriptor,
     VertexAttribute, VertexBufferLayout, VertexFormat,
@@ -97,6 +97,7 @@ impl ApplicationHandler for App {
                         .to_vec(),
                     fragment_entry: "main".to_string(),
                     enable_depth: false,
+                    cull_mode: CullMode::Back,
                     texture: None,
                 }),
             ]))

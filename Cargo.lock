@@ -1533,7 +1533,7 @@ dependencies = [
 
 [[package]]
 name = "rotex-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "ash-window",
  "pollster",
@@ -1552,8 +1552,7 @@ dependencies = [
 [[package]]
 name = "rotex-types"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c85d23da4ccb37cd4c56aed1db7ecfeea2431e9d188bc0e394cfdb092a77b699"
+source = "git+https://github.com/rotexengine/rotex-types?branch=staging#20adfe21f56dda836bb4f7170c619f1279ba28c8"
 dependencies = [
  "raw-window-handle",
 ]
@@ -1561,8 +1560,7 @@ dependencies = [
 [[package]]
 name = "rotex-vulkan"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5aae807abef746924a0bd7f3d95e4e1c9a91f9f1d013f51d147826e9c3ab4c8c"
+source = "git+https://github.com/rotexengine/rotex-vulkan?branch=staging#f340197cb3a3692f2d028d83d44aabd33160a4d8"
 dependencies = [
  "ash",
  "ash-window",
@@ -1572,9 +1570,8 @@ dependencies = [
 
 [[package]]
 name = "rotex-wgpu"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1384ed6a1ff1da70ae9ba7e41cac3fee1ae6111e3b6f18932e4f515f139f7edd"
+version = "0.1.1"
+source = "git+https://github.com/rotexengine/rotex-wgpu?branch=staging#698c84e7b6287d91e52def5addb6452c3f5c0088"
 dependencies = [
  "raw-window-handle",
  "rotex-types",
