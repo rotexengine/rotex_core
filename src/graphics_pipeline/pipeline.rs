@@ -4,7 +4,7 @@ use crate::error::vk_error;
 use crate::{Device, Error, ErrorKind};
 
 use super::shader::ShaderStageDescriptor;
-use super::state::{ColorBlendState, MultisampleState, RasterizationState, Viewport};
+use super::state::{ColorBlendState, DepthStencilState, MultisampleState, RasterizationState, Viewport};
 use super::vertex::VertexInputDescriptor;
 
 pub struct GraphicsPipeline {
@@ -51,6 +51,7 @@ pub struct GraphicsPipelineBuilder<'a> {
     multisample_state: MultisampleState,
     color_blend_state: ColorBlendState,
     subpass: Option<u32>,
+    depth_stencil_state: Option<DepthStencilState>,
 }
 
 impl<'a> GraphicsPipelineBuilder<'a> {
@@ -59,14 +60,15 @@ impl<'a> GraphicsPipelineBuilder<'a> {
             shader_stages: Vec::new(),
             render_pass: None,
             layout: None,
-            vertex_input_state: VertexInputDescriptor::new(),
+            vertex_input_state: VertexInputDescriptor::default(),
             input_assembly_state: vk::PipelineInputAssemblyStateCreateInfo::default()
                 .topology(vk::PrimitiveTopology::TRIANGLE_LIST),
-            viewport_state: Viewport::new(),
-            rasterization_state: RasterizationState::new(),
-            multisample_state: MultisampleState::new(),
-            color_blend_state: ColorBlendState::new(),
+            viewport_state: Viewport::default(),
+            rasterization_state: RasterizationState::default(),
+            multisample_state: MultisampleState::default(),
+            color_blend_state: ColorBlendState::default(),
             subpass: None,
+            depth_stencil_state: None,
         }
     }
 
@@ -125,6 +127,11 @@ impl<'a> GraphicsPipelineBuilder<'a> {
 
     pub fn with_extent(mut self, width: u32, height: u32) -> Self {
         self.viewport_state = self.viewport_state.with_extent(width, height);
+        self
+    }
+
+    pub fn with_depth_stencil_state(mut self, state: DepthStencilState) -> Self {
+        self.depth_stencil_state = Some(state);
         self
     }
 
@@ -201,6 +208,10 @@ impl<'a> GraphicsPipelineBuilder<'a> {
             .flags(self.color_blend_state.flags);
 
         let subpass = self.subpass.unwrap_or(0);
+        let depth_stencil_state = self
+            .depth_stencil_state
+            .unwrap_or_else(DepthStencilState::default);
+        let depth_stencil_info = depth_stencil_state.to_vk_depth_stencil_state();
 
         let create_info = vk::GraphicsPipelineCreateInfo::default()
             .stages(&vk_shader_stages)
@@ -210,6 +221,7 @@ impl<'a> GraphicsPipelineBuilder<'a> {
             .rasterization_state(&rasterizer_info)
             .multisample_state(&multisampler_info)
             .color_blend_state(&colourblend_info)
+            .depth_stencil_state(&depth_stencil_info)
             .layout(self.layout.unwrap())
             .render_pass(self.render_pass.unwrap())
             .subpass(subpass);

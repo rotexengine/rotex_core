@@ -1,5 +1,6 @@
 use ash::vk;
 
+use crate::buffer::RotexBuffer;
 use crate::device::{QueueCategory, Device};
 use crate::error::{vk_error, ErrorKind, Error, Severity};
 use crate::pass::RenderPass;
@@ -105,6 +106,112 @@ impl CommandBuffer {
     pub fn set_scissor(&self, device: &Device, scissor: vk::Rect2D) {
         unsafe {
             device.logical_device().cmd_set_scissor(self.handle, 0, &[scissor]);
+        }
+    }
+
+    pub fn transition_image_layout(
+        &self,
+        device: &Device,
+        image: vk::Image,
+        old_layout: vk::ImageLayout,
+        new_layout: vk::ImageLayout,
+        aspect_mask: vk::ImageAspectFlags,
+    ) {
+        let (src_access, src_stage) = Self::infer_state(old_layout);
+        let (dst_access, dst_stage) = Self::infer_state(new_layout);
+
+        let barrier = vk::ImageMemoryBarrier::default()
+            .old_layout(old_layout)
+            .new_layout(new_layout)
+            .src_queue_family_index(vk::QUEUE_FAMILY_IGNORED)
+            .dst_queue_family_index(vk::QUEUE_FAMILY_IGNORED)
+            .image(image)
+            .subresource_range(vk::ImageSubresourceRange {
+                aspect_mask: aspect_mask,
+                base_mip_level: 0,
+                level_count: 1,
+                base_array_layer: 0,
+                layer_count: 1,
+            })
+            .src_access_mask(src_access)
+            .dst_access_mask(dst_access);
+
+        unsafe {
+            device.logical_device().cmd_pipeline_barrier(
+                self.handle,
+                src_stage,
+                dst_stage,
+                vk::DependencyFlags::empty(),
+                &[], &[], &[barrier]
+            );
+        }
+    }
+
+    fn infer_state(layout: vk::ImageLayout) -> (vk::AccessFlags, vk::PipelineStageFlags) {
+        match layout {
+            vk::ImageLayout::UNDEFINED => (
+                vk::AccessFlags::empty(),
+                vk::PipelineStageFlags::TOP_OF_PIPE,
+            ),
+            vk::ImageLayout::TRANSFER_DST_OPTIMAL => (
+                vk::AccessFlags::TRANSFER_WRITE,
+                vk::PipelineStageFlags::TRANSFER,
+            ),
+            vk::ImageLayout::TRANSFER_SRC_OPTIMAL => (
+                vk::AccessFlags::TRANSFER_READ,
+                vk::PipelineStageFlags::TRANSFER,
+            ),
+            vk::ImageLayout::SHADER_READ_ONLY_OPTIMAL => (
+                vk::AccessFlags::SHADER_READ,
+                vk::PipelineStageFlags::FRAGMENT_SHADER,
+            ),
+            vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL => (
+                vk::AccessFlags::COLOR_ATTACHMENT_WRITE | vk::AccessFlags::COLOR_ATTACHMENT_READ,
+                vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
+            ),
+            vk::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL => (
+                vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_READ | vk::AccessFlags::DEPTH_STENCIL_ATTACHMENT_WRITE,
+                vk::PipelineStageFlags::EARLY_FRAGMENT_TESTS | vk::PipelineStageFlags::LATE_FRAGMENT_TESTS,
+            ),
+            _ => panic!("Rotex Core Panic: Layout transition rule not defined in state inferencer!"),
+        }
+    }
+
+    pub fn bind_index_buffer(
+        &self,
+        device: &Device,
+        buffer: &RotexBuffer,
+        offset: vk::DeviceSize,
+        index_type: vk::IndexType,
+    ) {
+        unsafe {
+            device.logical_device().cmd_bind_index_buffer(
+                self.handle,
+                buffer.handle(),
+                offset,
+                index_type,
+            );
+        }
+    }
+
+    pub fn draw_indexed(
+        &self,
+        device: &Device,
+        index_count: u32,
+        instance_count: u32,
+        first_index: u32,
+        vertex_offset: i32,
+        first_instance: u32,
+    ) {
+        unsafe {
+            device.logical_device().cmd_draw_indexed(
+                self.handle,
+                index_count,
+                instance_count,
+                first_index,
+                vertex_offset,
+                first_instance,
+            );
         }
     }
 }

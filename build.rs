@@ -16,6 +16,16 @@ fn main() {
         ShaderKind::Fragment,
         &out_dir.join("triangle.frag.spv"),
     );
+    compile_shader(
+        &shader_dir.join("cube.vert"),
+        ShaderKind::Vertex,
+        &out_dir.join("cube.vert.spv"),
+    );
+    compile_shader(
+        &shader_dir.join("cube.frag"),
+        ShaderKind::Fragment,
+        &out_dir.join("cube.frag.spv"),
+    );
 
     println!("cargo:rerun-if-changed=examples/shaders");
     println!("cargo:rerun-if-changed=build.rs");

@@ -1,6 +1,42 @@
 use ash::vk;
+use crate::buffer::RotexBuffer;
 use crate::error::vk_error;
 use crate::{Device, Error};
+
+pub struct DescriptorSet {
+    handle: vk::DescriptorSet,
+}
+
+impl DescriptorSet {
+    pub fn handle(&self) -> vk::DescriptorSet {
+        self.handle
+    }
+
+    pub fn write_buffer(
+        &self,
+        device: &Device,
+        binding: u32,
+        buffer: &RotexBuffer,
+        offset: vk::DeviceSize,
+        range: vk::DeviceSize,
+        descriptor_type: vk::DescriptorType, 
+    ) {
+        let bufferInfo = [vk::DescriptorBufferInfo::default()
+            .buffer(buffer.handle())
+            .offset(offset)
+            .range(range)];
+
+        let write = [vk::WriteDescriptorSet::default()
+            .dst_set(self.handle)
+            .dst_binding(binding)
+            .descriptor_type(descriptor_type)
+            .buffer_info(&bufferInfo)];
+
+        unsafe {
+            device.logical_device().update_descriptor_sets(&write, &[]);
+        }
+    }
+}
 
 pub struct DescriptorPool {
     handle: vk::DescriptorPool,
@@ -59,15 +95,5 @@ impl DescriptorPool {
                 .logical_device()
                 .destroy_descriptor_pool(self.handle, None);
         }
-    }
-}
-
-pub struct DescriptorSet {
-    handle: vk::DescriptorSet,
-}
-
-impl DescriptorSet {
-    pub fn handle(&self) -> vk::DescriptorSet {
-        self.handle
     }
 }

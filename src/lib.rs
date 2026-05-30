@@ -9,6 +9,7 @@ mod graphics_pipeline;
 mod image;
 mod framebuffer;
 mod descriptor;
+mod buffer;
 
 pub use command::{CommandBuffer, CommandPool};
 pub use core::{DebugMessenger, Instance, InstanceOptions};
@@ -22,8 +23,8 @@ pub use pass::{
 pub use swapchain::{Surface, Swapchain};
 pub use sync::{Fence, Semaphore};
 pub use graphics_pipeline::{
-    ColorBlendAttachmentState, ColorBlendState, GraphicsPipeline, GraphicsPipelineBuilder,
-    GraphicsPipelineLayout, RasterizationState, ShaderModule, ShaderStageDescriptor, Vertex,
-    VertexInputDescriptor,
+    ColorBlendAttachmentState, ColorBlendState, DepthStencilState, GraphicsPipeline,
+    GraphicsPipelineBuilder, GraphicsPipelineLayout, RasterizationState, ShaderModule,
+    ShaderStageDescriptor, Vertex, VertexInputDescriptor,
 };
 pub use framebuffer::{Framebuffer, FramebufferBuilder};

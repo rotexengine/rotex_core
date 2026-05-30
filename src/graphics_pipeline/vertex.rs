@@ -11,7 +11,7 @@ pub trait Vertex {
 }
 
 impl VertexInputDescriptor {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             binding_descriptions: Vec::new(),
             attribute_descriptions: Vec::new(),

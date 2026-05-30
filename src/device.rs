@@ -202,9 +202,13 @@ impl Adapter {
         }
         .map_err(vk_error)?;
 
+        let properties =
+            unsafe { instance.instance().get_physical_device_properties(self.handle) };
+
         Ok(Device {
             handle: self.handle,
             device,
+            properties,
             queues: allocations,
         })
     }
@@ -220,6 +224,7 @@ pub struct QueueAllocation {
 pub struct Device {
     pub(crate) handle: vk::PhysicalDevice,
     pub(crate) device: ash::Device,
+    properties: vk::PhysicalDeviceProperties,
     queues: Vec<QueueAllocation>,
 }
 
@@ -230,6 +235,10 @@ impl Device {
 
     pub fn physical_device(&self) -> vk::PhysicalDevice {
         self.handle
+    }
+
+    pub fn properties(&self) -> &vk::PhysicalDeviceProperties {
+        &self.properties
     }
 
     pub fn queues(&self) -> &[QueueAllocation] {
@@ -263,6 +272,17 @@ impl Device {
         }
 
         Err(Error::fatal(ErrorKind::NoCompatibleDevice))
+    }
+
+    pub fn pad_uniform_buffer_size(&self, original_size: usize) -> usize {
+        let min_alignment = self.properties.limits.min_uniform_buffer_offset_alignment as usize;
+        let mut aligned_size = original_size;
+        
+        if min_alignment > 0 {
+            aligned_size = (aligned_size + min_alignment - 1) & !(min_alignment - 1);
+        }
+        
+        aligned_size
     }
 
     pub fn destroy(&mut self) {

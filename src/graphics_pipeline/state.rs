@@ -10,7 +10,7 @@ pub struct Viewport {
 }
 
 impl Viewport {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             x: 0.0,
             y: 0.0,
@@ -66,7 +66,7 @@ pub struct RasterizationState {
 }
 
 impl RasterizationState {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             depth_clamp_enable: false,
             rasterizer_discard_enable: false,
@@ -145,6 +145,72 @@ impl RasterizationState {
     }
 }
 
+pub struct DepthStencilState {
+    pub depth_test_enable: bool,
+    pub depth_write_enable: bool,
+    pub depth_compare_op: vk::CompareOp,
+    pub depth_bounds_test_enable: bool,
+    pub stencil_test_enable: bool,
+    pub min_depth_bounds: f32,
+    pub max_depth_bounds: f32,
+}
+
+impl DepthStencilState {
+    pub fn default() -> Self {
+        Self {
+            depth_test_enable: false,
+            depth_write_enable: false,
+            depth_compare_op: vk::CompareOp::LESS,
+            depth_bounds_test_enable: false,
+            stencil_test_enable: false,
+            min_depth_bounds: 0.0,
+            max_depth_bounds: 1.0,
+        }
+    }
+
+    pub fn with_depth_test_enable(mut self, enable: bool) -> Self {
+        self.depth_test_enable = enable;
+        self
+    }
+
+    pub fn with_depth_write_enable(mut self, enable: bool) -> Self {
+        self.depth_write_enable = enable;
+        self
+    }
+
+    pub fn with_depth_compare_op(mut self, op: vk::CompareOp) -> Self {
+        self.depth_compare_op = op;
+        self
+    }
+
+    pub fn with_depth_bounds_test_enable(mut self, enable: bool) -> Self {
+        self.depth_bounds_test_enable = enable;
+        self
+    }
+
+    pub fn with_stencil_test_enable(mut self, enable: bool) -> Self {
+        self.stencil_test_enable = enable;
+        self
+    }
+
+    pub fn with_depth_bounds(mut self, min: f32, max: f32) -> Self {
+        self.min_depth_bounds = min;
+        self.max_depth_bounds = max;
+        self
+    }
+
+    pub fn to_vk_depth_stencil_state(&self) -> vk::PipelineDepthStencilStateCreateInfo<'_> {
+        vk::PipelineDepthStencilStateCreateInfo::default()
+            .depth_test_enable(self.depth_test_enable)
+            .depth_write_enable(self.depth_write_enable)
+            .depth_compare_op(self.depth_compare_op)
+            .depth_bounds_test_enable(self.depth_bounds_test_enable)
+            .stencil_test_enable(self.stencil_test_enable)
+            .min_depth_bounds(self.min_depth_bounds)
+            .max_depth_bounds(self.max_depth_bounds)
+    }
+}
+
 pub struct MultisampleState {
     pub sample_shading_enable: bool,
     pub rasterization_samples: vk::SampleCountFlags,
@@ -156,7 +222,7 @@ pub struct MultisampleState {
 }
 
 impl MultisampleState {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             sample_shading_enable: false,
             rasterization_samples: vk::SampleCountFlags::TYPE_1,
@@ -216,7 +282,7 @@ pub struct ColorBlendAttachmentState {
 }
 
 impl ColorBlendAttachmentState {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             blend_enable: false,
             src_color_blend_factor: vk::BlendFactor::ONE,
@@ -291,7 +357,7 @@ pub struct ColorBlendState {
 }
 
 impl ColorBlendState {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             logic_op_enable: false,
             logic_op: vk::LogicOp::CLEAR,

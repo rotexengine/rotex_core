@@ -7,5 +7,8 @@ mod vertex;
 pub use layout::GraphicsPipelineLayout;
 pub use pipeline::{GraphicsPipeline, GraphicsPipelineBuilder};
 pub use shader::{ShaderModule, ShaderStageDescriptor};
-pub use state::{ColorBlendAttachmentState, ColorBlendState, RasterizationState};
+#[allow(unused_imports)]
+pub use state::{
+    ColorBlendAttachmentState, ColorBlendState, DepthStencilState, RasterizationState,
+};
 pub use vertex::{Vertex, VertexInputDescriptor};
